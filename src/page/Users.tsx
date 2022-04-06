@@ -1,8 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
+import useAccountStore from '../store/users';
 
 export default function Users() {
+  const [loading, setLoading] = useState<boolean>(true);
   const users = JSON.parse(localStorage.getItem("user") || "[]");
+  const getUsers =  useAccountStore((state) => state.getDetailAccount);
+
+
+  useEffect(() => {
+    if (loading) {
+      getUsers(users.id);
+      setLoading(false);
+    }
+  },[])
+
+
   return (
     <div className="max-w-7xl mx-auto">
     <div className="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-full lg:w-full lg:pb-28 xl:pb-32">

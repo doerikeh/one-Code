@@ -8,6 +8,7 @@ export interface UserStore extends State {
     isLoadingAccount: boolean;
     getAccount: (currentUser: User) => void;
     setAccount: () => void;
+    getDetailAccount: (id: number) => void;
 }
 
 
@@ -32,7 +33,18 @@ const useAccountStore = create<UserStore>((set) => ({
                 isLoadingAccount: false,
             }));
         })
-
+    },
+    getDetailAccount: async (id: number) => {
+        set(() => ({
+            isLoadingAccount: true,
+        }));
+        await PromiseGet(`users/${id}`).then(res => {
+            console.log(res)
+            set(() => ({
+                currentUser: res,
+                isLoadingAccount: false,
+            }));
+        })
     }
 }))
 

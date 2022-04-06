@@ -4,10 +4,11 @@ export interface PostingListProps {
     key:number;
     title: string;
     body:string;
+    comments: number;
     username:string;
 }
 
-export default function PostingList({ title, body, username, key }: PostingListProps) {
+export default function PostingList({ title, body, username, key, comments }: PostingListProps) {
   return (
     <div
       className="mx-8 md:mx-12 lg:mx-24 xl:mx-36 pt-2 bg-gray-50 md:bg-white md:shadow-lg dark:bg-gray-900 md:dark:bg-gray-50
@@ -40,7 +41,7 @@ export default function PostingList({ title, body, username, key }: PostingListP
                   aria-hidden="true"
                 />
                 <p className="text-xs md:text-lg text-gray-600 dark:text-gray-400">
-                  5
+                  {comments}
                 </p>
               </div>
               <div className="ml-10">

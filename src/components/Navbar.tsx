@@ -3,7 +3,7 @@ import { Popover, Transition } from "@headlessui/react";
 import useAccountStore from "../store/users";
 
 export default function Navbar() {
-    const users = JSON.parse(localStorage.getItem("user") || "[]");
+  const users = JSON.parse(localStorage.getItem("user") || "[]");
   const navigation = [
     { name: "Cinta Coding", href: `/dashboard` },
     { name: "Post", href: "/dashboard" },

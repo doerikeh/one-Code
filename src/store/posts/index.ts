@@ -1,27 +1,35 @@
 import create, { State } from "zustand";
+import { Comments } from "../../utils/interface/comments";
 import { Posts } from "../../utils/interface/posts";
 import PromiseGet from "../../utils/promise/promise";
 
 export interface PostStore extends State {
     post: Posts[];
-    isLoadingAccount: boolean;
+    postComment: Posts;
+    comment: Comments[];
     setPost: () => void;
+    setComment: (id:number) => void
 }
 
 const usePostStore = create<PostStore>((set) => ({
-    isLoadingAccount: false,
     post: [],
+    comment: [],
+    postComment: {} as Posts,
     setPost: async () => {
-        set(() => ({
-            isLoadingAccount: true,
-        }));
         await PromiseGet("posts").then(res => {
             set(() => ({
                 post: res,
-                isLoadingAccount: false,
+                postComment:res
             }));
         })
-
+    },
+    setComment: async (id:number)=> {
+        await PromiseGet(`posts/${id}/comments`).then(res => {
+            console.log(res)
+            set(() => ({
+                comment: res,
+            }));
+        })
     }
 }))
 

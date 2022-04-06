@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import useAccountStore from "../store/users";
-import { User } from "../utils/interface/users";
+import { useLocation, Navigate } from "react-router-dom";
 
 export default function Login() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const users = useAccountStore((state) => state.users)
   const account = useAccountStore((state) => state.getAccount)
+  let location = useLocation();
 
   const accountExists = (username: string) => {
     const checkUser = users.filter((user) => user.username === username)
@@ -18,6 +19,7 @@ export default function Login() {
       const currentUser = users.some(item => item.username === username)
       if(currentUser){
         accountExists(username)
+        return <Navigate to="/dashboard" state={{ from: location }} replace />;
       } else{
         alert("username not found")
       }
@@ -79,7 +81,7 @@ export default function Login() {
             </div>
             <div>
               <button
-                value="button"
+                value="submit"
                 onClick={handleLogin}
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >

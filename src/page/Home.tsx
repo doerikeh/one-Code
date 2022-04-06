@@ -3,47 +3,53 @@ import Navbar from "../components/Navbar";
 import PostingList from "../components/PostingList";
 import usePostStore from "../store/posts";
 import useAccountStore from "../store/users";
-import { Posts } from "../utils/interface/posts";
+import { Posts, PostUser } from "../utils/interface/posts";
 
 export default function Home() {
-  const [page, setPage] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
   const [pages, setPages] = useState<number>(1);
-  const [currentPage, setCurrentPage] = useState<number>(5);
-  const [posts, setPosts] = useState<any[]>([]);
-  const [postUser, setPostUser] = useState<any[]>([])
 
   const getPost = usePostStore((state) => state.setPost);
   const users = useAccountStore((state) => state.users);
+  const getAccount = useAccountStore((state) => state.setAccount);
   const post = usePostStore((state) => state.post);
+  const setComment = usePostStore((state) => state.setComment);
+  const comment = usePostStore((state) => state.comment);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    if (loading) {
       getPost();
-    }, 400);
-    return () => clearInterval(interval);
-  }, [post]);
+      getAccount();
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    handleNext();
-    handlePostUser();
-  },[])
+    if (loading) {
+      const interval = setInterval(() => {
+        const comments = () => {
+          post.map((v) => {
+            setComment(v.id);
+          });
+        };
+        comments();
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, []);
 
-  const handleClick = (event:MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
-   setCurrentPage(Number(event.target))
-  }
+  const results: any = post.map((v) => ({
+    ...v,
+    comment: comment.filter((comments) => comments.postId === v.id),
+    user: users.filter((user) => user.id === v.userId)[0],
+  }));
 
-  const handleNext = () => {
-   setPage(Math.floor(post.length / currentPage))
-   const postPage = postUser.slice(currentPage * (pages - 1), currentPage * (pages + 1));
-   setPosts(postPage);
-  }
+  const maxPage = Math.ceil(results.length / 5);
+  const onNextPage = () => setPages((pages + 1) % maxPage);
+  const onPrevPage = () => setPages((pages + 5 - 1) % maxPage);
 
-  const handlePostUser = () => {
-    const results = post.map(v => ({ ...v, ...users.find(sp => sp.id === v.userId) }))
-    setPostUser(results)
-}
-
-console.log(posts)
+  console.log(maxPage);
+  console.log(results);
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -84,8 +90,14 @@ console.log(posts)
               </div>
             </div>
           </div>
-          {posts.map((item) => (
-            <PostingList key={item.id} title={item.title} username={item.username} body={item.body} />
+          {results.slice(pages * 10, 10 * (pages + 1)).map((item: any) => (
+            <PostingList
+              key={item.id}
+              title={item.title}
+              comments={item.comment.length}
+              username={item.user.username}
+              body={item.body}
+            />
           ))}
           <div className="max-w-2xl mx-auto flex justify-center">
             <nav aria-label="Page navigation example">
